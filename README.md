@@ -22,6 +22,7 @@ Requirements
 * Python >= 3.5 (lower versions might work but are untested)
 * numpy
 * scipy
+* h5py
 * AnalyzeMaxima (Download and Documentation at https://github.com/Brow71189/AnalyzeMaxima)
 
 Installation
