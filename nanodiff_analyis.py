@@ -37,8 +37,6 @@ class NanoDiffAnalyzerWorker(object):
         self.image = None
         self.shape = None
         self.blurred_image = None
-        self.blur_radius = None
-        self.noise_tolerance = None
 
     def _analysis_loop(self):
         while True:
