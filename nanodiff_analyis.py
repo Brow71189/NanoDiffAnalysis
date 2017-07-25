@@ -7,7 +7,6 @@ Created on Fri Mar 24 14:13:40 2017
 """
 
 import numpy as np
-from JitterWizard import correct_jitter
 import h5py
 import os
 import sys
@@ -19,6 +18,8 @@ import queue
 import threading
 import time
 import scipy.optimize
+from scipy import ndimage
+from AnalyzeMaxima import local_maxima
 
 class NanoDiffAnalyzerWorker(object):
     def __init__(self, hdf5filequeue, outqueue, max_number_peaks, second_ring_min_distance, blur_radius,
@@ -29,29 +30,15 @@ class NanoDiffAnalyzerWorker(object):
         self.second_ring_min_distance = second_ring_min_distance
         self.length_tolerance = length_tolerance
         self.angle_tolerance = angle_tolerance
-        self.Jitter = correct_jitter.Jitter()
         self.blur_radius = blur_radius
         self.noise_tolerance = noise_tolerance
         self.minimum_peak_distance = minimum_peak_distance
         self.maximum_peak_radius = maximum_peak_radius
         self.image = None
         self.shape = None
-
-    @property
-    def blur_radius(self):
-        return self.Jitter.blur_radius
-
-    @blur_radius.setter
-    def blur_radius(self, blur_radius):
-        self.Jitter.blur_radius = blur_radius
-
-    @property
-    def noise_tolerance(self):
-        return self.Jitter.noise_tolerance
-
-    @noise_tolerance.setter
-    def noise_tolerance(self, noise_tolerance):
-        self.Jitter.noise_tolerance = noise_tolerance
+        self.blurred_image = None
+        self.blur_radius = None
+        self.noise_tolerance = None
 
     def _analysis_loop(self):
         while True:
@@ -63,9 +50,9 @@ class NanoDiffAnalyzerWorker(object):
 
     def analyze_nanodiff_pattern(self, image):
         self.image = image
+        self.blurred_image = ndimage.gaussian_filter(self.image.astype(np.float64), self.blur_radius)
         self.shape = self.image.shape
-        self.Jitter.image = self.image
-        peaks = self.Jitter.local_maxima[1]
+        peaks = local_maxima.local_maxima(self.blurred_image, noise_tolerance=self.noise_tolerance)
 
         if len(peaks) > self.max_number_peaks:
             peaks = peaks[:self.max_number_peaks]
@@ -317,7 +304,7 @@ class NanoDiffAnalyzer(object):
                                           self.angle_tolerance, self.minimum_peak_distance,
                                           self.maximum_peak_radius)
         first_hexagon, second_hexagon, center = analyzer.analyze_nanodiff_pattern(image)
-        return (first_hexagon, second_hexagon, center, analyzer.Jitter.blurred_image)
+        return (first_hexagon, second_hexagon, center, analyzer.blurred_image)
 
     def make_strain_map(self):
         expanded_centers = np.expand_dims(self.centers, 2)
