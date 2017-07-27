@@ -28,7 +28,7 @@ Requirements
 Installation
 ------------
 
-If you used the "Download as ZIP" function on github to get the code make sure you rename the project folder to "JitterWizard" after extracting the ZIP-archive. If you used the "clone" function you can start right away.
+If you used the "Download as ZIP" function on github to get the code make sure you rename the project folder to "NanoDiffAnalysis" after extracting the ZIP-archive. If you used the "clone" function you can start right away.
 Copy the project folder in your Nion Swift Plugin directory (see http://nion.com/swift/developer/introduction.html#extension-locations for the plugin directory on your OS.)
 Under Linux the global plugin directory is "~/.local/share/Nion/Swift/Plugins".
 Then the plugin should be loaded automatically after restarting Swift. In case it is not loading correctly, make sure to start Swift from a Terminal and check the error messages written there.
