@@ -585,12 +585,16 @@ class NanoDiffPanelDelegate(object):
 
     def update_slice_image(self):
         if self.current_slice != self.slice_image.metadata.get('current_slice'):
+            metadata = self.slice_image.metadata
             self.slice_image.set_data(hdf5handler.gethdf5slice(self.current_slice, self.h5file))
+            self.slice_image.set_metadata(metadata)
             self.slice_image.title = 'Slice_{:.0f}_of_{}'.format(self.current_slice, os.path.splitext(os.path.split(self.filepath)[1])[0])
             update_metadata(self.slice_image, {'current_slice': self.current_slice})
 
     def update_vdf_image(self, data, roi):
+        metadata = self.vdf_image.metadata
         self.vdf_image.set_data(data)
+        self.vdf_image.set_metadata(metadata)
         self.vdf_image.title = 'VDF_of_{}_({:.2f}_{:.2f})'.format(os.path.splitext(os.path.split(self.filepath)[1])[0], *roi['center'])
 
     def update_results_image(self):
@@ -615,7 +619,9 @@ class NanoDiffPanelDelegate(object):
         update_metadata(self.results_image, {'peak_finding_parameters': parameters})
 
     def update_single_image_peaks(self, first_hexagon, second_hexagon, center, blurred_image):
+        metadata = self.single_image_peaks.metadata
         self.single_image_peaks.set_data(blurred_image)
+        self.single_image_peaks.set_metadata(metadata)
         self.single_image_peaks.title = 'Peak_positions_of_{}'.format(self.slice_image.title)
         parameters = {'max_number_peaks': self._nanodiff_analyzer.max_number_peaks,
                       'second_ring_min_distance': self._nanodiff_analyzer.second_ring_min_distance,
